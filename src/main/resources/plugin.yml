@@ -1,0 +1,8 @@
+name: BlockRacing
+version: '1.0-SNAPSHOT'
+main: top.darkpath2011.blockRacing.BlockRacing
+api-version: '1.18'
+load: STARTUP
+authors: [ DarkPath2011 ]
+description: Block Racing Mini Game Plugin
+website: https://github.com/darkpath2011

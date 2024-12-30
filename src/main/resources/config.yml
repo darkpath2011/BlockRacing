@@ -1,0 +1,13 @@
+winner_socer: 2
+teams:
+  blue:
+    color: "§9"
+    name: "蓝队"
+  red:
+    color: "§c"
+    name: "红队"
+
+default-items:
+  - "STONE:1"
+  - "DIAMOND_SWORD:1"
+  - "IRON_PICKAXE:1"
