@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class Tools {
     public static Material getRandomBlock() {
         List<Material> availableBlocks = new ArrayList<>();
         for (Material material : Material.values()) {
-            if (!material.isBlock()) {
+            if (!material.isBlock() && isUnobtainableBlock(material)) {
                 continue;
             }
             availableBlocks.add(material);
@@ -50,6 +51,32 @@ public class Tools {
             case END_PORTAL:
             case END_PORTAL_FRAME:
             case DRAGON_EGG:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private static boolean isUnobtainableBlock(Material material) {
+        switch (material) {
+            case BEDROCK:
+            case END_PORTAL:
+            case END_PORTAL_FRAME:
+            case COMMAND_BLOCK:
+            case STRUCTURE_BLOCK:
+            case BARRIER:
+            case STRUCTURE_VOID:
+                return true;
+            case OAK_SAPLING:
+            case BIRCH_SAPLING:
+            case SPRUCE_SAPLING:
+            case JUNGLE_SAPLING:
+            case ACACIA_SAPLING:
+            case DARK_OAK_SAPLING:
+            case WHEAT:
+            case MELON:
+            case PUMPKIN:
+            case SWEET_BERRIES:
                 return true;
             default:
                 return false;

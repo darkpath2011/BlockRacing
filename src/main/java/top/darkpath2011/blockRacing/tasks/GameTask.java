@@ -1,12 +1,12 @@
 package top.darkpath2011.blockRacing.tasks;
 
+import org.bukkit.inventory.ItemStack;
 import top.darkpath2011.blockRacing.BlockRacing;
 import top.darkpath2011.blockRacing.object.Team;
 import top.darkpath2011.blockRacing.utils.Tools;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -38,25 +38,22 @@ public class GameTask extends BukkitRunnable {
     @Override
     public void run() {
         ms.clear();
-        for (Team team : BlockRacing.room.getTeams().values()){
-            ms.add(team.getName()+": §e"+team.getScore());
-            for (Material task : team.getTasks()){
-                ItemStack item = new ItemStack(task);
-                if (item.hasItemMeta() && item.getItemMeta().hasLocalizedName()) {
-                    ms.add(item.getItemMeta().getLocalizedName());
-                } else {
-                    ms.add(task.toString());
-                }
+        for (Team team : BlockRacing.room.getTeams().values()) {
+            ms.add(team.getName() + ": §e" + team.getScore());
+            for (Material task : team.getTasks()) {
+                ms.add(task.toString());
             }
             ms.add("---------------");
         }
         for (int i = 0; i < ms.size(); i++) {
-            objective.getScore(ms.get(i)).setScore(ms.size() - 1 - i);
+            String line = ms.get(i);
+            objective.getScore(line).setScore(ms.size() - 1 - i);
         }
         for (Player player : BlockRacing.room.getPlayers()){
             if (player == null) {
                 continue;
             }
+            this.scoreboard.resetScores(player);
             player.setScoreboard(scoreboard);
             StringBuilder teamInfo = new StringBuilder();
             teamInfo.append("§f[");

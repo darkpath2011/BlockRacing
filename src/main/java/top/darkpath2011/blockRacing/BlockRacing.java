@@ -1,10 +1,13 @@
 package top.darkpath2011.blockRacing;
 
+import lombok.Getter;
 import top.darkpath2011.blockRacing.command.GameCommand;
-import top.darkpath2011.blockRacing.command.TeamCheatCommand;
+import top.darkpath2011.blockRacing.command.TeamUserManagerCommand;
 import top.darkpath2011.blockRacing.command.TeleportCommand;
+import top.darkpath2011.blockRacing.listener.ChestListener;
 import top.darkpath2011.blockRacing.listener.GameListener;
 import top.darkpath2011.blockRacing.listener.PlayerListener;
+import top.darkpath2011.blockRacing.manager.ChestManager;
 import top.darkpath2011.blockRacing.room.GameRoom;
 import top.darkpath2011.blockRacing.room.GameStatus;
 import org.bukkit.Bukkit;
@@ -16,6 +19,7 @@ import java.lang.reflect.Field;
 public class BlockRacing extends JavaPlugin {
     public static BlockRacing plugin;
     public static GameRoom room;
+    public static ChestManager chestManager;
 
     @Override
     public void onLoad() {
@@ -26,19 +30,19 @@ public class BlockRacing extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         room = new GameRoom(GameStatus.WAITING);
+        chestManager = new ChestManager();
         getServer().getPluginManager().registerEvents(new GameListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        getServer().getPluginManager().registerEvents(new ChestListener(), this);
         getCommandMap().register("", new GameCommand("blockracing"));
         getCommandMap().register("", new TeleportCommand());
-        getCommandMap().register("", new TeamCheatCommand());
+        getCommandMap().register("", new TeamUserManagerCommand());
         getLogger().info("BlockRacing plugin has been enabled.");
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
         getLogger().info("BlockRacing plugin has been disabled.");
     }
 

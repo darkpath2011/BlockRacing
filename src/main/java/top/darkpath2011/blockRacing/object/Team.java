@@ -1,5 +1,9 @@
 package top.darkpath2011.blockRacing.object;
 
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import top.darkpath2011.blockRacing.utils.Tools;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +29,7 @@ public class Team {
     private String color;
     private List<Material> tasks;
     private Map<Integer, Inventory> teamChests;
+    private Map<Integer, Location> teamLocations;
 
     public Team(String name,String color) {
         this.name = name;
@@ -33,11 +38,14 @@ public class Team {
         this.tasks = new ArrayList<>();
         this.players = new HashSet<>();
         this.teamChests = new HashMap<>();
+        this.teamLocations = new HashMap<>();
         //初始4个任务
         for (int i=1;i<=4;i++){
-            this.tasks.add(Tools.getRandomBlock());
+            this.tasks.add(addTask());
         }
-        teamChests.put(1, Bukkit.createInventory(null, 54, getColor()+getName()));
+        for (int i=1;i<=3;i++){
+            teamChests.put(i, Bukkit.createInventory(null, 54, getColor()+getName()));
+        }
     }
 
     public void addPlayer(Player player) {
@@ -50,7 +58,30 @@ public class Team {
 
     public void removeTask(Material task) {
         this.tasks.remove(task);
-        this.tasks.add(Tools.getRandomBlock());
+        this.tasks.add(addTask());
+    }
+
+    public Material addTask() {
+        Material material = Tools.getRandomBlock();
+        if (!players.isEmpty()){
+            for (Player player : players){
+                for (ItemStack playerItem : player.getInventory().getContents()) {
+                    if (playerItem != null && playerItem.isSimilar(playerItem)) {
+                        addScore(player.getName(),playerItem.getType());
+                        break;
+                    }
+                }
+            }
+        }
+        return material;
+    }
+
+    public void createTeamLocation(Location location) {
+        teamLocations.put(teamLocations.size()+1,location);
+    }
+
+    public void removeTeamLocation(Integer locationId) {
+        teamLocations.remove(locationId);
     }
 
     public void openTeamChest(Player player,Integer chestId) {
@@ -65,5 +96,26 @@ public class Team {
             }
         }
         teamChests.clear();
+    }
+
+    public void addScore(String player,Material item){
+        Bukkit.getServer().broadcastMessage(
+                "§f[§6✔§f] "+getColor()+getName()+"§r队员 ["+getColor()+player
+                        +"§r] §a完成了§r目标 [§f"+ item.name()+"§r]§r!"
+        );
+        setScore(getScore() + 1);
+        Player p =Bukkit.getPlayer(player);
+        if (p!= null){
+            p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
+        }
+    }
+
+    public void roll() {
+        List<Material> taskList = new ArrayList<>(tasks);
+        Collections.shuffle(taskList);
+        for (Material task : taskList) {
+            addScore("系统",task);
+            removeTask(task);
+        }
     }
 }
