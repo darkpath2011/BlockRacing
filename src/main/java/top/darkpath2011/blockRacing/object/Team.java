@@ -1,18 +1,18 @@
 package top.darkpath2011.blockRacing.object;
 
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import top.darkpath2011.blockRacing.utils.Tools;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import top.darkpath2011.blockRacing.utils.Tools;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author: ShaoqingG
@@ -27,7 +27,7 @@ public class Team {
     private int score;
     private Set<Player> players;
     private String color;
-    private List<Material> tasks;
+    private List<Task> tasks;
     private Map<Integer, Inventory> teamChests;
     private Map<Integer, Location> teamLocations;
 
@@ -44,25 +44,38 @@ public class Team {
             this.tasks.add(addTask());
         }
         for (int i=1;i<=3;i++){
-            teamChests.put(i, Bukkit.createInventory(null, 54, getColor()+getName()));
+            teamChests.put(i, Bukkit.createInventory(null, 54, getColor()+getName()+" §r[§a"+i+"§r]"));
         }
     }
 
     public void addPlayer(Player player) {
         players.add(player);
+        String newName = getColor()+getName();
+        player.setDisplayName(newName);
+        player.setPlayerListName(newName);
     }
 
     public void removePlayer(Player player) {
         players.remove(player);
+        String newName = "§r"+getName();
+        player.setDisplayName(newName);
+        player.setPlayerListName(newName);
     }
 
-    public void removeTask(Material task) {
-        this.tasks.remove(task);
-        this.tasks.add(addTask());
+    public void removeTask(Material material) {
+        Iterator<Task> iterator = tasks.iterator();
+        while (iterator.hasNext()) {
+            Task t = iterator.next();
+            if (t.getMaterial() == material) {
+                iterator.remove();
+                tasks.add(addTask());
+                break;
+            }
+        }
     }
 
-    public Material addTask() {
-        Material material = Tools.getRandomBlock();
+    public Task addTask() {
+        Task material = Tools.getRandomBlock();
         if (!players.isEmpty()){
             for (Player player : players){
                 for (ItemStack playerItem : player.getInventory().getContents()) {
@@ -111,11 +124,18 @@ public class Team {
     }
 
     public void roll() {
-        List<Material> taskList = new ArrayList<>(tasks);
+        List<Task> taskList = new ArrayList<>(tasks);
         Collections.shuffle(taskList);
-        for (Material task : taskList) {
-            addScore("系统",task);
-            removeTask(task);
+        for (Task task : taskList) {
+            addScore("系统",task.getMaterial());
+            removeTask(task.getMaterial());
         }
     }
+
+    public List<Task> getTasksByMaterial(Material material) {
+        return tasks.stream()
+                .filter(t -> t.getMaterial() == material)
+                .collect(Collectors.toList());
+    }
+
 }

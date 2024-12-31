@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import top.darkpath2011.blockRacing.room.GameStatus;
 
 public class GameListener implements Listener {
 
@@ -30,9 +31,15 @@ public class GameListener implements Listener {
 
     private void handleItemInteraction(Player player, ItemStack item) {
         GameRoom room = BlockRacing.room;
+        if (room.getGameStatus() != GameStatus.RUNNING){
+            return;
+        }
         Team team = room.getPlayerTeam(player);
+        if (team == null){
+            return;
+        }
 
-        if (team.getTasks().contains(item.getType())) {
+        if (team.getTasksByMaterial(item.getType()) != null) {
             team.addScore(player.getName(), item.getType());
             team.removeTask(item.getType());
 
@@ -50,7 +57,6 @@ public class GameListener implements Listener {
 
     private void giveItemsToOtherTeams(ItemStack item,Team team) {
         GameRoom room = BlockRacing.room;
-
         for (Team otherTeam : room.getTeams().values()) {
             if (otherTeam != team) {
                 for (Player player : otherTeam.getPlayers()) {

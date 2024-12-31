@@ -2,6 +2,7 @@ package top.darkpath2011.blockRacing.tasks;
 
 import org.bukkit.inventory.ItemStack;
 import top.darkpath2011.blockRacing.BlockRacing;
+import top.darkpath2011.blockRacing.object.Task;
 import top.darkpath2011.blockRacing.object.Team;
 import top.darkpath2011.blockRacing.utils.Tools;
 import org.bukkit.Bukkit;
@@ -40,8 +41,8 @@ public class GameTask extends BukkitRunnable {
         ms.clear();
         for (Team team : BlockRacing.room.getTeams().values()) {
             ms.add(team.getName() + ": §e" + team.getScore());
-            for (Material task : team.getTasks()) {
-                ms.add(task.toString());
+            for (Task task : team.getTasks()) {
+                ms.add(task.getDifficulty()+" | "+task.getName());
             }
             ms.add("---------------");
         }

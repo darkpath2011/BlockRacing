@@ -5,6 +5,8 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
+import top.darkpath2011.blockRacing.BlockRacing;
+import top.darkpath2011.blockRacing.object.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +24,14 @@ public class Tools {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.create());
     }
 
-    public static Material getRandomBlock() {
-        List<Material> availableBlocks = new ArrayList<>();
-        for (Material material : Material.values()) {
-            if (!material.isBlock() && isUnobtainableBlock(material)) {
-                continue;
-            }
-            availableBlocks.add(material);
+    public static Task getRandomBlock() {
+        List<Task> availableBlocks = new ArrayList<>();
+        for (String block : BlockRacing.plugin.getConfig().getStringList("blocks")){
+            String[] blockInfo = block.split(":");
+            String displayName = blockInfo[0];
+            String difficulty = blockInfo[1];
+            Material material = Material.getMaterial(blockInfo[2]);
+            availableBlocks.add(new Task(displayName, difficulty, material));
         }
         Random random = new Random();
         int randomIndex = random.nextInt(availableBlocks.size());
