@@ -8,6 +8,7 @@ import top.darkpath2011.blockRacing.listener.ChestListener;
 import top.darkpath2011.blockRacing.listener.GameListener;
 import top.darkpath2011.blockRacing.listener.PlayerListener;
 import top.darkpath2011.blockRacing.manager.ChestManager;
+import top.darkpath2011.blockRacing.object.MenuManager; // 确保导入 MenuManager 类
 import top.darkpath2011.blockRacing.room.GameRoom;
 import top.darkpath2011.blockRacing.room.GameStatus;
 import org.bukkit.Bukkit;
@@ -17,9 +18,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.lang.reflect.Field;
 
 public class BlockRacing extends JavaPlugin {
+    @Getter
     public static BlockRacing plugin;
+    @Getter
     public static GameRoom room;
+    @Getter
     public static ChestManager chestManager;
+    @Getter
+    private MenuManager menuManager;
 
     @Override
     public void onLoad() {
@@ -32,6 +38,8 @@ public class BlockRacing extends JavaPlugin {
     public void onEnable() {
         room = new GameRoom(GameStatus.WAITING);
         chestManager = new ChestManager();
+        menuManager = new MenuManager();
+        getServer().getPluginManager().registerEvents(menuManager, this);
         getServer().getPluginManager().registerEvents(new GameListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new ChestListener(), this);
