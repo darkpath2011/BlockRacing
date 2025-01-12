@@ -38,12 +38,15 @@ public class BlockRacing extends JavaPlugin {
         getCommandMap().register("", new GameCommand("blockracing"));
         getCommandMap().register("", new TeleportCommand());
         getCommandMap().register("", new TeamUserManagerCommand());
-        getLogger().info("BlockRacing plugin has been enabled.");
+        
+        // 插件加载成功时渲染颜文字
+        getLogger().info("§l§a(๑˃̵ᴗ˂̵)و BlockRacing plugin has been enabled. §l§bAuthor: darkpath2011.shazi_awa");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("BlockRacing plugin has been disabled.");
+        // 插件卸载时渲染颜文字
+        getLogger().info("§l§a(๑˃̵ᴗ˂̵)و BlockRacing plugin has been disabled. §l§bAuthor: darkpath2011.shazi_awa");
     }
 
     public static CommandMap getCommandMap() {
