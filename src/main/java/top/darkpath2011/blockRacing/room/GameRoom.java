@@ -35,11 +35,11 @@ public class GameRoom {
         this.players = new HashSet<>();
         this.gameTimer = null;
         this.winner = null;
-        //load teams from config
+        // load teams from config
         ConfigurationSection teams = BlockRacing.plugin.getConfig().getConfigurationSection("teams");
         if (teams != null) {
             for (String teamName : teams.getKeys(false)) {
-                this.teams.put(teamName,new Team(teams.getString(teamName+".name"),teams.getString(teamName+".color")));
+                this.teams.put(teamName, new Team(teams.getString(teamName + ".name"), teams.getString(teamName + ".color")));
             }
         }
     }
@@ -51,10 +51,10 @@ public class GameRoom {
         for (Player player : players) {
             player.getInventory().clear();
             player.sendMessage("§f[§a✔§f] §a游戏开始!");
-            player.sendTitle("§l§aGo","§a游戏开始!");
+            player.sendTitle("§l§aGo", "§a游戏开始!");
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             List<String> defaultItems = BlockRacing.plugin.getConfig().getStringList("default-items");
-            if (!defaultItems.isEmpty()){
+            if (!defaultItems.isEmpty()) {
                 for (String itemName : defaultItems) {
                     String[] itemInfo = itemName.split(":");
                     ItemStack item = new ItemStack(Material.getMaterial(itemInfo[0]));
@@ -62,7 +62,7 @@ public class GameRoom {
                     player.getInventory().addItem(item);
                 }
             }
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
         }
     }
 
@@ -71,16 +71,17 @@ public class GameRoom {
         this.gameTimer.cancel();
         for (Player player : players) {
             player.sendMessage("§c游戏结束!");
-            if (winner != null){
-                player.sendTitle(winner.getColor()+winner.getName()+"胜利!","§c游戏结束!");
+            if (winner != null) {
+                player.sendTitle(winner.getColor() + winner.getName() + "胜利!", "§c游戏结束!");
             } else {
-                player.sendTitle("§l§c游戏被强制结束!","§l§cGAME STOP!");
+                player.sendTitle("§l§c游戏被强制结束!", "§l§cGAME STOP!");
             }
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
             teams.forEach((name, team) -> {
                 team.clearTeamChests();
             });
-            player.sendMessage("§l§c如果需要启动第二场游戏，请删除当前地图并重启服务器，以确保游戏正常运行。感谢您的理解与配合！");
+            player.setGameMode(org.bukkit.GameMode.SPECTATOR); 
+            player.sendMessage("§l§c你已被设置为旁观者模式。");
         }
         BlockRacing.room = new GameRoom(GameStatus.WAITING);
     }
@@ -93,17 +94,17 @@ public class GameRoom {
         players.remove(player);
     }
 
-    public void addPlayerToTeam(Player player,String teamName) {
+    public void addPlayerToTeam(Player player, String teamName) {
         teams.get(teamName).addPlayer(player);
     }
 
-    public void leaveTeam(Player player){
+    public void leaveTeam(Player player) {
         getPlayerTeam(player).removePlayer(player);
     }
 
-    public Team getPlayerTeam(Player player){
-        for(Team team : teams.values()){
-            if (team.getPlayers().contains(player)){
+    public Team getPlayerTeam(Player player) {
+        for (Team team : teams.values()) {
+            if (team.getPlayers().contains(player)) {
                 return team;
             }
         }
