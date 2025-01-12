@@ -1,6 +1,7 @@
 package top.darkpath2011.blockRacing;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import top.darkpath2011.blockRacing.object.Menu;
 
@@ -15,20 +16,24 @@ public class ChestsUI {
         Menu menu = new Menu("游戏菜单",9);
         menu.addItem(0,Material.ENDER_PEARL,"§l§a团队传送点", p -> {
             locationGui(player);
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 1.0f, 1.0f); // 播放村民音效
         });
-        for (int i = 1; i<= BlockRacing.room.getPlayerTeam(player).getTeamChests().size(); i++){
+        for (int i = 1; i <= BlockRacing.room.getPlayerTeam(player).getTeamChests().size(); i++){
             int finalI = i;
             menu.addItem(finalI+1,Material.ENDER_CHEST,"§l§a团队"+finalI+"号箱子",item ->{
                 BlockRacing.room.getPlayerTeam(player).openTeamChest(player, finalI);
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 1.0f, 1.0f); // 播放村民音效
             });
         }
         menu.addItem(7,Material.GRASS_BLOCK,"§l§a创建团队传送点", item ->{
             BlockRacing.room.getPlayerTeam(player).createTeamLocation(player.getLocation());
             player.sendMessage("§l§a已创建团队传送点");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 1.0f, 1.0f); // 播放村民音效
         });
         menu.addItem(8,Material.COMMAND_BLOCK,"§l§aROLL一下", item ->{
             BlockRacing.room.getPlayerTeam(player).roll();
             player.sendMessage("§l§c执行成功!");
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 1.0f, 1.0f); // 播放村民音效
         });
         BlockRacing.chestManager.addMenu(menu);
         menu.open(player);
@@ -41,6 +46,7 @@ public class ChestsUI {
             menu.addItem(finalI-1,Material.NOTE_BLOCK,"传送点"+i,item ->{
                 player.teleport(BlockRacing.room.getPlayerTeam(player).getTeamLocations().get(finalI));
                 player.sendMessage("§l§a传送成功");
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_TRADE, 1.0f, 1.0f); // 播放村民音效
             });
         }
         BlockRacing.chestManager.addMenu(menu);
