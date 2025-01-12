@@ -4,21 +4,21 @@ import lombok.Getter;
 import top.darkpath2011.blockRacing.command.GameCommand;
 import top.darkpath2011.blockRacing.command.TeamUserManagerCommand;
 import top.darkpath2011.blockRacing.command.TeleportCommand;
+import top.darkpath2011.blockRacing.command.HelpCommand;
 import top.darkpath2011.blockRacing.listener.ChestListener;
 import top.darkpath2011.blockRacing.listener.GameListener;
 import top.darkpath2011.blockRacing.listener.PlayerListener;
 import top.darkpath2011.blockRacing.manager.ChestManager;
 import top.darkpath2011.blockRacing.room.GameRoom;
 import top.darkpath2011.blockRacing.room.GameStatus;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Field;
-
 public class BlockRacing extends JavaPlugin {
+    @Getter
     public static BlockRacing plugin;
+    @Getter
     public static GameRoom room;
+    @Getter
     public static ChestManager chestManager;
 
     @Override
@@ -35,10 +35,13 @@ public class BlockRacing extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GameListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new ChestListener(), this);
-        getCommandMap().register("", new GameCommand("blockracing"));
-        getCommandMap().register("", new TeleportCommand());
-        getCommandMap().register("", new TeamUserManagerCommand());
-        
+
+        // 注册命令
+        getCommand("blockracing").setExecutor(new GameCommand());
+        getCommand("teleport").setExecutor(new TeleportCommand());
+        getCommand("teamusermanager").setExecutor(new TeamUserManagerCommand());
+        getCommand("blockracinghelp").setExecutor(new HelpCommand());
+
         // 插件加载成功时渲染颜文字
         getLogger().info("§l§a(๑˃̵ᴗ˂̵)و BlockRacing plugin has been enabled. §l§bAuthor: darkpath2011.shazi_awa");
     }
@@ -47,17 +50,5 @@ public class BlockRacing extends JavaPlugin {
     public void onDisable() {
         // 插件卸载时渲染颜文字
         getLogger().info("§l§a(๑˃̵ᴗ˂̵)و BlockRacing plugin has been disabled. §l§bAuthor: darkpath2011.shazi_awa");
-    }
-
-    public static CommandMap getCommandMap() {
-        CommandMap commandMap = null;
-        try {
-            Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-            bukkitCommandMap.setAccessible(true);
-            commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return commandMap;
     }
 }
