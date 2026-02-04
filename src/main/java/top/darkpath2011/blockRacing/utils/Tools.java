@@ -4,7 +4,6 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.meta.ItemMeta;
 import top.darkpath2011.blockRacing.BlockRacing;
 import top.darkpath2011.blockRacing.object.Task;
 
@@ -28,10 +27,22 @@ public class Tools {
         List<Task> availableBlocks = new ArrayList<>();
         for (String block : BlockRacing.plugin.getConfig().getStringList("blocks")){
             String[] blockInfo = block.split(":");
+            if (blockInfo.length < 3) {
+                BlockRacing.plugin.getLogger().warning("无效的 block 配置条目: " + block);
+                continue;
+            }
             String displayName = blockInfo[0];
             String difficulty = blockInfo[1];
             Material material = Material.getMaterial(blockInfo[2]);
+            if (material == null) {
+                BlockRacing.plugin.getLogger().warning("未知的方块材质: " + blockInfo[2]);
+                continue;
+            }
             availableBlocks.add(new Task(displayName, difficulty, material));
+        }
+        if (availableBlocks.isEmpty()) {
+            BlockRacing.plugin.getLogger().warning("未找到可用的方块任务，使用默认 STONE 作为兜底。");
+            return new Task("石头", "简单", Material.STONE);
         }
         Random random = new Random();
         int randomIndex = random.nextInt(availableBlocks.size());

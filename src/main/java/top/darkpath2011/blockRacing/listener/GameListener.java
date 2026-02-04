@@ -9,15 +9,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import top.darkpath2011.blockRacing.room.GameStatus;
 
 public class GameListener implements Listener {
 
     @EventHandler
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        handleItemInteraction(event.getPlayer(), event.getItem().getItemStack());
+    public void onEntityPickupItem(EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            handleItemInteraction(player, event.getItem().getItemStack());
+        }
     }
 
     @EventHandler
@@ -25,12 +28,21 @@ public class GameListener implements Listener {
         if (event.getInventory().getType() == InventoryType.PLAYER) {
             Player player = (Player) event.getWhoClicked();
             ItemStack item = event.getCurrentItem();
+            if (item == null) {
+                return;
+            }
             handleItemInteraction(player, item);
         }
     }
 
     private void handleItemInteraction(Player player, ItemStack item) {
+        if (item == null) {
+            return;
+        }
         GameRoom room = BlockRacing.room;
+        if (room == null) {
+            return;
+        }
         if (room.getGameStatus() != GameStatus.RUNNING){
             return;
         }
@@ -39,7 +51,7 @@ public class GameListener implements Listener {
             return;
         }
 
-        if (team.getTasksByMaterial(item.getType()) != null) {
+        if (!team.getTasksByMaterial(item.getType()).isEmpty()) {
             team.addScore(player.getName(), item.getType());
             team.removeTask(item.getType());
 

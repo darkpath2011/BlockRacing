@@ -44,7 +44,7 @@ public class ChestListener implements Listener {
             Map<UUID, Menu> menus = BlockRacing.chestManager.getMenus();
             if (menus.containsKey(inventoryId)) {
                 menus.remove(inventoryId);
-                System.out.println("已移除菜单: " + inventoryId);
+                BlockRacing.plugin.getLogger().info("已移除菜单: " + inventoryId);
             }
         }
     }

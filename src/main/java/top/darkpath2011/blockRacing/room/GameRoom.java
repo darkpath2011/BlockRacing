@@ -45,6 +45,9 @@ public class GameRoom {
     }
 
     public void startGame() {
+        if (this.gameStatus == GameStatus.RUNNING) {
+            return;
+        }
         this.gameStatus = GameStatus.RUNNING;
         BukkitRunnable runnable = new GameTask();
         this.gameTimer = runnable.runTaskTimer(BlockRacing.plugin, 0L, 20L);
@@ -57,8 +60,22 @@ public class GameRoom {
             if (!defaultItems.isEmpty()){
                 for (String itemName : defaultItems) {
                     String[] itemInfo = itemName.split(":");
-                    ItemStack item = new ItemStack(Material.getMaterial(itemInfo[0]));
-                    item.setAmount(Integer.parseInt(itemInfo[1]));  // 设置物品的数量
+                    if (itemInfo.length < 2) {
+                        BlockRacing.plugin.getLogger().warning("无效的默认物品配置: " + itemName);
+                        continue;
+                    }
+                    Material material = Material.getMaterial(itemInfo[0]);
+                    if (material == null) {
+                        BlockRacing.plugin.getLogger().warning("未知的物品材质: " + itemInfo[0]);
+                        continue;
+                    }
+                    ItemStack item = new ItemStack(material);
+                    try {
+                        item.setAmount(Integer.parseInt(itemInfo[1]));  // 设置物品的数量
+                    } catch (NumberFormatException ex) {
+                        BlockRacing.plugin.getLogger().warning("无效的物品数量: " + itemInfo[1]);
+                        item.setAmount(1);
+                    }
                     player.getInventory().addItem(item);
                 }
             }
@@ -68,7 +85,10 @@ public class GameRoom {
 
     public void endGame() {
         this.gameStatus = GameStatus.ENDING;
-        this.gameTimer.cancel();
+        if (this.gameTimer != null) {
+            this.gameTimer.cancel();
+            this.gameTimer = null;
+        }
         for (Player player : players) {
             player.sendMessage("§c游戏结束!");
             if (winner != null){
@@ -77,11 +97,9 @@ public class GameRoom {
                 player.sendTitle("§l§c游戏被强制结束!","§l§cGAME STOP!");
             }
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-            teams.forEach((name, team) -> {
-                team.clearTeamChests();
-            });
             player.sendMessage("§l§c如果需要启动第二场游戏，请删除当前地图并重启服务器，以确保游戏正常运行。感谢您的理解与配合！");
         }
+        teams.forEach((name, team) -> team.clearTeamChests());
         BlockRacing.room = new GameRoom(GameStatus.WAITING);
     }
 
@@ -94,11 +112,19 @@ public class GameRoom {
     }
 
     public void addPlayerToTeam(Player player,String teamName) {
-        teams.get(teamName).addPlayer(player);
+        Team team = teams.get(teamName);
+        if (team == null) {
+            BlockRacing.plugin.getLogger().warning("尝试将玩家加入不存在的队伍: " + teamName);
+            return;
+        }
+        team.addPlayer(player);
     }
 
     public void leaveTeam(Player player){
-        getPlayerTeam(player).removePlayer(player);
+        Team team = getPlayerTeam(player);
+        if (team != null) {
+            team.removePlayer(player);
+        }
     }
 
     public Team getPlayerTeam(Player player){
@@ -108,5 +134,17 @@ public class GameRoom {
             }
         }
         return null;
+    }
+
+    public void shutdown() {
+        if (gameTimer != null) {
+            gameTimer.cancel();
+            gameTimer = null;
+        }
+        for (Team team : teams.values()) {
+            team.clearTeamChests();
+        }
+        players.clear();
+        winner = null;
     }
 }
