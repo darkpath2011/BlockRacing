@@ -38,6 +38,9 @@ public class GameTask extends BukkitRunnable {
 
     @Override
     public void run() {
+        if (BlockRacing.room == null) {
+            return;
+        }
         ms.clear();
         for (Team team : BlockRacing.room.getTeams().values()) {
             ms.add(team.getName() + ": §e" + team.getScore());
@@ -45,6 +48,9 @@ public class GameTask extends BukkitRunnable {
                 ms.add(task.getDifficulty()+" | "+task.getName());
             }
             ms.add("---------------");
+        }
+        for (String entry : scoreboard.getEntries()) {
+            scoreboard.resetScores(entry);
         }
         for (int i = 0; i < ms.size(); i++) {
             String line = ms.get(i);
@@ -54,7 +60,6 @@ public class GameTask extends BukkitRunnable {
             if (player == null) {
                 continue;
             }
-            this.scoreboard.resetScores(player);
             player.setScoreboard(scoreboard);
             StringBuilder teamInfo = new StringBuilder();
             teamInfo.append("§f[");

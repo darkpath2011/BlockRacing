@@ -18,11 +18,15 @@ public class GameCommand extends Command {
 
     @Override
     public boolean execute(CommandSender commandSender, String label, String[] args) {
+        if (BlockRacing.room == null) {
+            commandSender.sendMessage("§c游戏房间未初始化，请稍后重试。");
+            return true;
+        }
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
             if (args.length == 0) {
                 player.sendMessage("§c请提供有效的命令参数!");
-                return false;
+                return true;
             }
             switch (args[0].toLowerCase()) {
                 case "start":
@@ -36,19 +40,19 @@ public class GameCommand extends Command {
                 case "team":
                     if (args.length < 2) {
                         player.sendMessage("§c请提供有效的队伍命令（join/leave）!");
-                        return false;
+                        return true;
                     }
                     switch (args[1].toLowerCase()) {
                         case "join":
                             if (args.length < 4) {
                                 player.sendMessage("§c请提供玩家名和队伍名！");
-                                return false;
+                                return true;
                             }
                             Player targetPlayer = Bukkit.getPlayer(args[2]);
                             String teamName = args[3];
                             if (targetPlayer == null) {
                                 player.sendMessage("§c玩家 " + args[2] + " 不在线！");
-                                return false;
+                                return true;
                             }
                             BlockRacing.room.addPlayerToTeam(targetPlayer, teamName);
                             player.sendMessage("§f[§6✔§f] §a成功将 " + args[2] + " 加入至 " + teamName + " 队伍！");
@@ -56,12 +60,12 @@ public class GameCommand extends Command {
                         case "leave":
                             if (args.length < 3) {
                                 player.sendMessage("§c请提供玩家名！");
-                                return false;
+                                return true;
                             }
                             Player leavingPlayer = Bukkit.getPlayer(args[2]);
                             if (leavingPlayer == null) {
                                 player.sendMessage("§c玩家 " + args[2] + " 不在线！");
-                                return false;
+                                return true;
                             }
 
                             BlockRacing.room.leaveTeam(leavingPlayer);
@@ -81,6 +85,6 @@ public class GameCommand extends Command {
         } else {
             commandSender.sendMessage("§c此命令只能由玩家执行!");
         }
-        return false;
+        return true;
     }
 }

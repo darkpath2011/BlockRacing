@@ -27,5 +27,12 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
+        GameRoom room = BlockRacing.room;
+        if (room != null) {
+            room.removePlayer(player);
+            if (room.getPlayerTeam(player) != null) {
+                room.leaveTeam(player);
+            }
+        }
     }
 }

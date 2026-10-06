@@ -79,7 +79,7 @@ public class Team {
         if (!players.isEmpty()){
             for (Player player : players){
                 for (ItemStack playerItem : player.getInventory().getContents()) {
-                    if (playerItem != null && playerItem.isSimilar(playerItem)) {
+                    if (playerItem != null && playerItem.getType() == material.getMaterial()) {
                         addScore(player.getName(),playerItem.getType());
                         break;
                     }
@@ -99,6 +99,9 @@ public class Team {
 
     public void openTeamChest(Player player,Integer chestId) {
         Inventory teamChest = teamChests.get(chestId);
+        if (teamChest == null) {
+            return;
+        }
         player.openInventory(teamChest);
     }
 
@@ -108,7 +111,6 @@ public class Team {
                 inventory.setItem(i, null);
             }
         }
-        teamChests.clear();
     }
 
     public void addScore(String player,Material item){
